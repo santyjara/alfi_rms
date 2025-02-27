@@ -1,14 +1,20 @@
 import uvicorn
-from db import startup_db_handler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import menu, orders, payments, reservations, tables
+
+# Import all routers
+from src.api.routers import menu, orders, payments, reservations, tables
+
+# Import database utilities
+from src.gateways.database.utils import startup_db_handler
 
 # Create FastAPI app
 app = FastAPI(
     title="Restaurant Management System",
     description="API for managing restaurant operations",
     version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # Configure CORS
@@ -37,9 +43,10 @@ def startup_event():
 @app.get("/")
 def read_root():
     return {
-        "app": "Restaurant Management System",
+        "application": "Restaurant Management System API",
         "version": "1.0.0",
         "documentation": "/docs",
+        "alternative_documentation": "/redoc",
     }
 
 

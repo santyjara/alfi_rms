@@ -2,8 +2,12 @@ import logging
 from datetime import datetime
 
 # Import models
-from src.gateways.database.models import (MenuItemCustomization, Order,
-                                          OrderItem, OrderItemCustomization)
+from src.gateways.database.models import (
+    MenuItemCustomization,
+    Order,
+    OrderItem,
+    OrderItemCustomization,
+)
 from src.services.base import BaseService
 from src.services.inventory import InventoryService
 from src.services.menu import MenuService

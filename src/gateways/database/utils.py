@@ -1,4 +1,5 @@
 import os
+from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -22,12 +23,20 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+# Get database session dependency
+def get_db() -> Generator:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 # Initialize database function
 def init_db():
-    from src.gateways.database.models import Base
+    from models import Base
 
     Base.metadata.create_all(bind=engine)
-    return SessionLocal()
 
 
 # Seed database with initial data
@@ -35,9 +44,7 @@ def seed_db():
     db = SessionLocal()
 
     try:
-        from src.gateways.database.models import (Employee, InventoryItem,
-                                                  MenuItem, RecipeRequirement,
-                                                  Table)
+        from models import Employee, InventoryItem, MenuItem, RecipeRequirement, Table
 
         # Check if we already have tables
         if db.query(Table).count() == 0:
