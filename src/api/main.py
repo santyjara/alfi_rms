@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import all routers
-from src.api.routers import menu, orders, payments, reservations, tables
+from src.api.routers import menu, orders, payments, reservations, table
 
 # Import database utilities
 from src.gateways.database.utils import startup_db_handler

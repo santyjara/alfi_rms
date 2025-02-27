@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-from db import get_db
+from src.gateways.database.utils import get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from schemas import TableCreate, TableResponse, TableUpdate
-from services import TableService
+from src.schemas.table import TableCreate, TableResponse, TableUpdate
+from src.services.table import TableService
 
 router = APIRouter(
     prefix="/tables",
