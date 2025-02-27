@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-from src.gateways.database.utils import get_db
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from src.gateways.database.utils import get_db
 from src.schemas.table import TableCreate, TableResponse, TableUpdate
 from src.services.table import TableService
 

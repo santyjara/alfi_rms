@@ -1,11 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import List, Optional
 from datetime import date
+from typing import List
+
+from src.gateways.database.utils import get_db
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from db import get_db
-from services import ReservationService
-from schemas import ReservationCreate, ReservationUpdate, ReservationResponse, ReservationStatusUpdate
+from src.schemas.reservation import (
+    ReservationCreate,
+    ReservationResponse,
+    ReservationStatusUpdate,
+    ReservationUpdate,
+)
+from src.services.reservation import ReservationService
 
 router = APIRouter(
     prefix="/reservations",
@@ -20,8 +26,8 @@ def get_reservation_service(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=ReservationResponse, status_code=201)
 def create_reservation(
-        reservation: ReservationCreate,
-        service: ReservationService = Depends(get_reservation_service)
+    reservation: ReservationCreate,
+    service: ReservationService = Depends(get_reservation_service),
 ):
     """Create a new reservation."""
     result = service.create_reservation(
@@ -30,17 +36,18 @@ def create_reservation(
         contact_name=reservation.contact_name,
         contact_phone=reservation.contact_phone,
         special_requests=reservation.special_requests,
-        table_id=reservation.table_id
+        table_id=reservation.table_id,
     )
     if not result:
-        raise HTTPException(status_code=400, detail="Failed to create reservation. No available tables.")
+        raise HTTPException(
+            status_code=400, detail="Failed to create reservation. No available tables."
+        )
     return result
 
 
 @router.get("/{reservation_id}", response_model=ReservationResponse)
 def get_reservation(
-        reservation_id: int,
-        service: ReservationService = Depends(get_reservation_service)
+    reservation_id: int, service: ReservationService = Depends(get_reservation_service)
 ):
     """Get a reservation by ID."""
     reservation = service.get_reservation(reservation_id)
@@ -51,8 +58,7 @@ def get_reservation(
 
 @router.get("/date/{date}", response_model=List[ReservationResponse])
 def get_reservations_by_date(
-        date: date,
-        service: ReservationService = Depends(get_reservation_service)
+    date: date, service: ReservationService = Depends(get_reservation_service)
 ):
     """Get all reservations for a specific date."""
     return service.get_reservations_for_date(date)
@@ -60,9 +66,9 @@ def get_reservations_by_date(
 
 @router.put("/{reservation_id}", response_model=ReservationResponse)
 def update_reservation(
-        reservation_id: int,
-        reservation: ReservationUpdate,
-        service: ReservationService = Depends(get_reservation_service)
+    reservation_id: int,
+    reservation: ReservationUpdate,
+    service: ReservationService = Depends(get_reservation_service),
 ):
     """Update a reservation."""
     existing_reservation = service.get_reservation(reservation_id)
@@ -80,12 +86,14 @@ def update_reservation(
 
 @router.put("/{reservation_id}/status", response_model=ReservationResponse)
 def update_reservation_status(
-        reservation_id: int,
-        status_update: ReservationStatusUpdate,
-        service: ReservationService = Depends(get_reservation_service)
+    reservation_id: int,
+    status_update: ReservationStatusUpdate,
+    service: ReservationService = Depends(get_reservation_service),
 ):
     """Update a reservation's status."""
-    reservation = service.update_reservation_status(reservation_id, status_update.status)
+    reservation = service.update_reservation_status(
+        reservation_id, status_update.status
+    )
     if not reservation:
         raise HTTPException(status_code=404, detail="Reservation not found")
     return reservation

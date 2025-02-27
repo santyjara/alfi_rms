@@ -1,20 +1,31 @@
 # api/seed.py
 import os
+import random
 import sys
 from datetime import datetime, timedelta
-import random
 from decimal import Decimal
 
 # Add the parent directory to sys.path to allow imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
-from src.gateways.database.utils import SessionLocal, engine
+
 from src.gateways.database.models import (
-    Base, Table, Reservation, MenuItem, MenuItemCustomization,
-    InventoryItem, RecipeRequirement, Order, OrderItem,
-    OrderItemCustomization, Payment, Employee, Shift
+    Base,
+    Employee,
+    InventoryItem,
+    MenuItem,
+    MenuItemCustomization,
+    Order,
+    OrderItem,
+    OrderItemCustomization,
+    Payment,
+    RecipeRequirement,
+    Reservation,
+    Shift,
+    Table,
 )
+from src.gateways.database.utils import SessionLocal, engine
 
 
 def seed_database():
@@ -75,13 +86,55 @@ def seed_tables(db: Session):
 
 def seed_employees(db: Session):
     employees = [
-        Employee(name="John Smith", role="Manager", contact_info="555-1234", credentials="admin", is_active=True),
-        Employee(name="Emily Johnson", role="Host", contact_info="555-2345", credentials="host", is_active=True),
-        Employee(name="Michael Brown", role="Server", contact_info="555-3456", credentials="server", is_active=True),
-        Employee(name="Jessica Davis", role="Server", contact_info="555-4567", credentials="server", is_active=True),
-        Employee(name="David Wilson", role="Chef", contact_info="555-5678", credentials="kitchen", is_active=True),
-        Employee(name="Sarah Martinez", role="Chef", contact_info="555-6789", credentials="kitchen", is_active=True),
-        Employee(name="Robert Taylor", role="Bartender", contact_info="555-7890", credentials="bar", is_active=True),
+        Employee(
+            name="John Smith",
+            role="Manager",
+            contact_info="555-1234",
+            credentials="admin",
+            is_active=True,
+        ),
+        Employee(
+            name="Emily Johnson",
+            role="Host",
+            contact_info="555-2345",
+            credentials="host",
+            is_active=True,
+        ),
+        Employee(
+            name="Michael Brown",
+            role="Server",
+            contact_info="555-3456",
+            credentials="server",
+            is_active=True,
+        ),
+        Employee(
+            name="Jessica Davis",
+            role="Server",
+            contact_info="555-4567",
+            credentials="server",
+            is_active=True,
+        ),
+        Employee(
+            name="David Wilson",
+            role="Chef",
+            contact_info="555-5678",
+            credentials="kitchen",
+            is_active=True,
+        ),
+        Employee(
+            name="Sarah Martinez",
+            role="Chef",
+            contact_info="555-6789",
+            credentials="kitchen",
+            is_active=True,
+        ),
+        Employee(
+            name="Robert Taylor",
+            role="Bartender",
+            contact_info="555-7890",
+            credentials="bar",
+            is_active=True,
+        ),
     ]
     db.add_all(employees)
     db.commit()
@@ -98,7 +151,7 @@ def seed_employees(db: Session):
     shifts = []
     # Add shifts for a week
     for day_offset in range(7):
-        day = today + timedelta(days=day_offset)
+        # day = today + timedelta(days=day_offset)
         morning_start = morning_shift_start + timedelta(days=day_offset)
         morning_end = morning_shift_end + timedelta(days=day_offset)
         evening_start = evening_shift_start + timedelta(days=day_offset)
@@ -112,19 +165,23 @@ def seed_employees(db: Session):
 
             # Assign to morning or evening shift
             if random.random() < 0.5:
-                shifts.append(Shift(
-                    employee_id=employee.employee_id,
-                    start_time=morning_start,
-                    end_time=morning_end,
-                    shift_type="morning"
-                ))
+                shifts.append(
+                    Shift(
+                        employee_id=employee.employee_id,
+                        start_time=morning_start,
+                        end_time=morning_end,
+                        shift_type="morning",
+                    )
+                )
             else:
-                shifts.append(Shift(
-                    employee_id=employee.employee_id,
-                    start_time=evening_start,
-                    end_time=evening_end,
-                    shift_type="evening"
-                ))
+                shifts.append(
+                    Shift(
+                        employee_id=employee.employee_id,
+                        start_time=evening_start,
+                        end_time=evening_end,
+                        shift_type="evening",
+                    )
+                )
 
     db.add_all(shifts)
     db.commit()
@@ -134,44 +191,108 @@ def seed_employees(db: Session):
 def seed_menu_items(db: Session):
     menu_items = [
         # Appetizers
-        MenuItem(name="Caesar Salad", description="Fresh romaine lettuce with Caesar dressing, croutons, and parmesan",
-                 price=8.99, category="Appetizers"),
-        MenuItem(name="Bruschetta",
-                 description="Toasted bread topped with diced tomatoes, garlic, basil, and olive oil", price=7.99,
-                 category="Appetizers"),
-        MenuItem(name="Calamari", description="Lightly fried squid served with marinara sauce", price=11.99,
-                 category="Appetizers"),
-        MenuItem(name="Mozzarella Sticks", description="Breaded and fried mozzarella served with marinara sauce",
-                 price=8.99, category="Appetizers"),
-
+        MenuItem(
+            name="Caesar Salad",
+            description="Fresh romaine lettuce with Caesar dressing, croutons, and parmesan",
+            price=8.99,
+            category="Appetizers",
+        ),
+        MenuItem(
+            name="Bruschetta",
+            description="Toasted bread topped with diced tomatoes, garlic, basil, and olive oil",
+            price=7.99,
+            category="Appetizers",
+        ),
+        MenuItem(
+            name="Calamari",
+            description="Lightly fried squid served with marinara sauce",
+            price=11.99,
+            category="Appetizers",
+        ),
+        MenuItem(
+            name="Mozzarella Sticks",
+            description="Breaded and fried mozzarella served with marinara sauce",
+            price=8.99,
+            category="Appetizers",
+        ),
         # Main Courses
-        MenuItem(name="Margherita Pizza", description="Classic pizza with fresh tomato sauce, mozzarella, and basil",
-                 price=13.99, category="Main"),
-        MenuItem(name="Pepperoni Pizza", description="Pizza with tomato sauce, mozzarella, and pepperoni", price=15.99,
-                 category="Main"),
-        MenuItem(name="Spaghetti Carbonara", description="Pasta with eggs, cheese, pancetta, and black pepper",
-                 price=14.99, category="Main"),
-        MenuItem(name="Lasagna", description="Layered pasta with meat sauce, ricotta, and mozzarella", price=16.99,
-                 category="Main"),
-        MenuItem(name="Chicken Parmesan",
-                 description="Breaded chicken breast topped with marinara sauce and mozzarella", price=17.99,
-                 category="Main"),
-        MenuItem(name="Grilled Salmon", description="Salmon fillet grilled with lemon and herbs", price=19.99,
-                 category="Main"),
-
+        MenuItem(
+            name="Margherita Pizza",
+            description="Classic pizza with fresh tomato sauce, mozzarella, and basil",
+            price=13.99,
+            category="Main",
+        ),
+        MenuItem(
+            name="Pepperoni Pizza",
+            description="Pizza with tomato sauce, mozzarella, and pepperoni",
+            price=15.99,
+            category="Main",
+        ),
+        MenuItem(
+            name="Spaghetti Carbonara",
+            description="Pasta with eggs, cheese, pancetta, and black pepper",
+            price=14.99,
+            category="Main",
+        ),
+        MenuItem(
+            name="Lasagna",
+            description="Layered pasta with meat sauce, ricotta, and mozzarella",
+            price=16.99,
+            category="Main",
+        ),
+        MenuItem(
+            name="Chicken Parmesan",
+            description="Breaded chicken breast topped with marinara sauce and mozzarella",
+            price=17.99,
+            category="Main",
+        ),
+        MenuItem(
+            name="Grilled Salmon",
+            description="Salmon fillet grilled with lemon and herbs",
+            price=19.99,
+            category="Main",
+        ),
         # Desserts
-        MenuItem(name="Tiramisu", description="Classic Italian dessert with coffee-soaked ladyfingers and mascarpone",
-                 price=7.99, category="Desserts"),
-        MenuItem(name="Chocolate Cake", description="Rich chocolate cake with ganache", price=6.99,
-                 category="Desserts"),
-        MenuItem(name="Cheesecake", description="New York style cheesecake with berry compote", price=7.99,
-                 category="Desserts"),
-
+        MenuItem(
+            name="Tiramisu",
+            description="Classic Italian dessert with coffee-soaked ladyfingers and mascarpone",
+            price=7.99,
+            category="Desserts",
+        ),
+        MenuItem(
+            name="Chocolate Cake",
+            description="Rich chocolate cake with ganache",
+            price=6.99,
+            category="Desserts",
+        ),
+        MenuItem(
+            name="Cheesecake",
+            description="New York style cheesecake with berry compote",
+            price=7.99,
+            category="Desserts",
+        ),
         # Beverages
-        MenuItem(name="Soda", description="Assorted sodas", price=2.99, category="Beverages"),
-        MenuItem(name="Iced Tea", description="Freshly brewed iced tea", price=2.99, category="Beverages"),
-        MenuItem(name="Coffee", description="Regular or decaf", price=2.99, category="Beverages"),
-        MenuItem(name="Glass of Wine", description="House red or white wine", price=7.99, category="Beverages"),
+        MenuItem(
+            name="Soda", description="Assorted sodas", price=2.99, category="Beverages"
+        ),
+        MenuItem(
+            name="Iced Tea",
+            description="Freshly brewed iced tea",
+            price=2.99,
+            category="Beverages",
+        ),
+        MenuItem(
+            name="Coffee",
+            description="Regular or decaf",
+            price=2.99,
+            category="Beverages",
+        ),
+        MenuItem(
+            name="Glass of Wine",
+            description="House red or white wine",
+            price=7.99,
+            category="Beverages",
+        ),
     ]
     db.add_all(menu_items)
     db.commit()
@@ -179,21 +300,41 @@ def seed_menu_items(db: Session):
     # Add customizations
     customizations = [
         # Pizza customizations
-        MenuItemCustomization(menu_item_id=5, name="Extra Cheese", price=1.50, is_active=True),
-        MenuItemCustomization(menu_item_id=5, name="Mushrooms", price=1.00, is_active=True),
-        MenuItemCustomization(menu_item_id=5, name="Olives", price=1.00, is_active=True),
-        MenuItemCustomization(menu_item_id=6, name="Extra Pepperoni", price=1.50, is_active=True),
-        MenuItemCustomization(menu_item_id=6, name="Mushrooms", price=1.00, is_active=True),
-        MenuItemCustomization(menu_item_id=6, name="Olives", price=1.00, is_active=True),
-
+        MenuItemCustomization(
+            menu_item_id=5, name="Extra Cheese", price=1.50, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=5, name="Mushrooms", price=1.00, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=5, name="Olives", price=1.00, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=6, name="Extra Pepperoni", price=1.50, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=6, name="Mushrooms", price=1.00, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=6, name="Olives", price=1.00, is_active=True
+        ),
         # Pasta customizations
-        MenuItemCustomization(menu_item_id=7, name="Gluten-Free Pasta", price=2.00, is_active=True),
-        MenuItemCustomization(menu_item_id=7, name="Extra Cheese", price=1.50, is_active=True),
-        MenuItemCustomization(menu_item_id=8, name="Extra Cheese", price=1.50, is_active=True),
-
+        MenuItemCustomization(
+            menu_item_id=7, name="Gluten-Free Pasta", price=2.00, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=7, name="Extra Cheese", price=1.50, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=8, name="Extra Cheese", price=1.50, is_active=True
+        ),
         # Beverage customizations
-        MenuItemCustomization(menu_item_id=16, name="Almond Milk", price=0.50, is_active=True),
-        MenuItemCustomization(menu_item_id=16, name="Extra Shot", price=1.00, is_active=True),
+        MenuItemCustomization(
+            menu_item_id=16, name="Almond Milk", price=0.50, is_active=True
+        ),
+        MenuItemCustomization(
+            menu_item_id=16, name="Extra Shot", price=1.00, is_active=True
+        ),
     ]
     db.add_all(customizations)
     db.commit()
@@ -203,18 +344,62 @@ def seed_menu_items(db: Session):
 
 def seed_inventory(db: Session):
     inventory_items = [
-        InventoryItem(name="Lettuce", quantity=30, unit="head", cost_per_unit=1.50, min_threshold=5),
-        InventoryItem(name="Tomato", quantity=50, unit="kg", cost_per_unit=2.00, min_threshold=10),
-        InventoryItem(name="Flour", quantity=100, unit="kg", cost_per_unit=1.00, min_threshold=20),
-        InventoryItem(name="Cheese", quantity=30, unit="kg", cost_per_unit=5.00, min_threshold=5),
-        InventoryItem(name="Pasta", quantity=40, unit="kg", cost_per_unit=1.50, min_threshold=10),
-        InventoryItem(name="Chicken", quantity=25, unit="kg", cost_per_unit=4.00, min_threshold=5),
-        InventoryItem(name="Beef", quantity=20, unit="kg", cost_per_unit=6.00, min_threshold=5),
-        InventoryItem(name="Salmon", quantity=15, unit="kg", cost_per_unit=8.00, min_threshold=3),
-        InventoryItem(name="Olive Oil", quantity=20, unit="liter", cost_per_unit=10.00, min_threshold=5),
-        InventoryItem(name="Coffee Beans", quantity=15, unit="kg", cost_per_unit=12.00, min_threshold=3),
-        InventoryItem(name="Wine", quantity=30, unit="bottle", cost_per_unit=15.00, min_threshold=10),
-        InventoryItem(name="Soda", quantity=100, unit="liter", cost_per_unit=1.00, min_threshold=20),
+        InventoryItem(
+            name="Lettuce",
+            quantity=30,
+            unit="head",
+            cost_per_unit=1.50,
+            min_threshold=5,
+        ),
+        InventoryItem(
+            name="Tomato", quantity=50, unit="kg", cost_per_unit=2.00, min_threshold=10
+        ),
+        InventoryItem(
+            name="Flour", quantity=100, unit="kg", cost_per_unit=1.00, min_threshold=20
+        ),
+        InventoryItem(
+            name="Cheese", quantity=30, unit="kg", cost_per_unit=5.00, min_threshold=5
+        ),
+        InventoryItem(
+            name="Pasta", quantity=40, unit="kg", cost_per_unit=1.50, min_threshold=10
+        ),
+        InventoryItem(
+            name="Chicken", quantity=25, unit="kg", cost_per_unit=4.00, min_threshold=5
+        ),
+        InventoryItem(
+            name="Beef", quantity=20, unit="kg", cost_per_unit=6.00, min_threshold=5
+        ),
+        InventoryItem(
+            name="Salmon", quantity=15, unit="kg", cost_per_unit=8.00, min_threshold=3
+        ),
+        InventoryItem(
+            name="Olive Oil",
+            quantity=20,
+            unit="liter",
+            cost_per_unit=10.00,
+            min_threshold=5,
+        ),
+        InventoryItem(
+            name="Coffee Beans",
+            quantity=15,
+            unit="kg",
+            cost_per_unit=12.00,
+            min_threshold=3,
+        ),
+        InventoryItem(
+            name="Wine",
+            quantity=30,
+            unit="bottle",
+            cost_per_unit=15.00,
+            min_threshold=10,
+        ),
+        InventoryItem(
+            name="Soda",
+            quantity=100,
+            unit="liter",
+            cost_per_unit=1.00,
+            min_threshold=20,
+        ),
     ]
     db.add_all(inventory_items)
     db.commit()
@@ -230,49 +415,88 @@ def seed_inventory(db: Session):
 
     recipe_requirements = [
         # Caesar Salad
-        RecipeRequirement(menu_item_id=menu_item_map["Caesar Salad"], inventory_item_id=inventory_map["Lettuce"],
-                          quantity=0.5),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Caesar Salad"],
+            inventory_item_id=inventory_map["Lettuce"],
+            quantity=0.5,
+        ),
         # Margherita Pizza
-        RecipeRequirement(menu_item_id=menu_item_map["Margherita Pizza"], inventory_item_id=inventory_map["Flour"],
-                          quantity=0.3),
-        RecipeRequirement(menu_item_id=menu_item_map["Margherita Pizza"], inventory_item_id=inventory_map["Tomato"],
-                          quantity=0.2),
-        RecipeRequirement(menu_item_id=menu_item_map["Margherita Pizza"], inventory_item_id=inventory_map["Cheese"],
-                          quantity=0.25),
-        RecipeRequirement(menu_item_id=menu_item_map["Margherita Pizza"], inventory_item_id=inventory_map["Olive Oil"],
-                          quantity=0.05),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Margherita Pizza"],
+            inventory_item_id=inventory_map["Flour"],
+            quantity=0.3,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Margherita Pizza"],
+            inventory_item_id=inventory_map["Tomato"],
+            quantity=0.2,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Margherita Pizza"],
+            inventory_item_id=inventory_map["Cheese"],
+            quantity=0.25,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Margherita Pizza"],
+            inventory_item_id=inventory_map["Olive Oil"],
+            quantity=0.05,
+        ),
         # Pepperoni Pizza
-        RecipeRequirement(menu_item_id=menu_item_map["Pepperoni Pizza"], inventory_item_id=inventory_map["Flour"],
-                          quantity=0.3),
-        RecipeRequirement(menu_item_id=menu_item_map["Pepperoni Pizza"], inventory_item_id=inventory_map["Tomato"],
-                          quantity=0.2),
-        RecipeRequirement(menu_item_id=menu_item_map["Pepperoni Pizza"], inventory_item_id=inventory_map["Cheese"],
-                          quantity=0.3),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Pepperoni Pizza"],
+            inventory_item_id=inventory_map["Flour"],
+            quantity=0.3,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Pepperoni Pizza"],
+            inventory_item_id=inventory_map["Tomato"],
+            quantity=0.2,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Pepperoni Pizza"],
+            inventory_item_id=inventory_map["Cheese"],
+            quantity=0.3,
+        ),
         # Spaghetti Carbonara
-        RecipeRequirement(menu_item_id=menu_item_map["Spaghetti Carbonara"], inventory_item_id=inventory_map["Pasta"],
-                          quantity=0.2),
-        RecipeRequirement(menu_item_id=menu_item_map["Spaghetti Carbonara"], inventory_item_id=inventory_map["Cheese"],
-                          quantity=0.1),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Spaghetti Carbonara"],
+            inventory_item_id=inventory_map["Pasta"],
+            quantity=0.2,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Spaghetti Carbonara"],
+            inventory_item_id=inventory_map["Cheese"],
+            quantity=0.1,
+        ),
         # Grilled Salmon
-        RecipeRequirement(menu_item_id=menu_item_map["Grilled Salmon"], inventory_item_id=inventory_map["Salmon"],
-                          quantity=0.25),
-        RecipeRequirement(menu_item_id=menu_item_map["Grilled Salmon"], inventory_item_id=inventory_map["Olive Oil"],
-                          quantity=0.05),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Grilled Salmon"],
+            inventory_item_id=inventory_map["Salmon"],
+            quantity=0.25,
+        ),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Grilled Salmon"],
+            inventory_item_id=inventory_map["Olive Oil"],
+            quantity=0.05,
+        ),
         # Coffee
-        RecipeRequirement(menu_item_id=menu_item_map["Coffee"], inventory_item_id=inventory_map["Coffee Beans"],
-                          quantity=0.02),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Coffee"],
+            inventory_item_id=inventory_map["Coffee Beans"],
+            quantity=0.02,
+        ),
         # Wine
-        RecipeRequirement(menu_item_id=menu_item_map["Glass of Wine"], inventory_item_id=inventory_map["Wine"],
-                          quantity=0.20),
-
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Glass of Wine"],
+            inventory_item_id=inventory_map["Wine"],
+            quantity=0.20,
+        ),
         # Soda
-        RecipeRequirement(menu_item_id=menu_item_map["Soda"], inventory_item_id=inventory_map["Soda"], quantity=0.3),
+        RecipeRequirement(
+            menu_item_id=menu_item_map["Soda"],
+            inventory_item_id=inventory_map["Soda"],
+            quantity=0.3,
+        ),
     ]
     db.add_all(recipe_requirements)
     db.commit()
@@ -300,16 +524,24 @@ def seed_reservations(db: Session):
 
                 # Only add future reservations
                 if reservation_time > now:
-                    reservations.append(Reservation(
-                        date_time=reservation_time,
-                        party_size=random.randint(1, table.capacity),
-                        contact_name=f"Customer {len(reservations) + 1}",
-                        contact_phone=f"555-{random.randint(1000, 9999)}",
-                        special_requests=random.choice(
-                            ["No special requests", "Window seat preferred", "Highchair needed", ""]),
-                        table_id=table.table_id,
-                        status="confirmed"
-                    ))
+                    reservations.append(
+                        Reservation(
+                            date_time=reservation_time,
+                            party_size=random.randint(1, table.capacity),
+                            contact_name=f"Customer {len(reservations) + 1}",
+                            contact_phone=f"555-{random.randint(1000, 9999)}",
+                            special_requests=random.choice(
+                                [
+                                    "No special requests",
+                                    "Window seat preferred",
+                                    "Highchair needed",
+                                    "",
+                                ]
+                            ),
+                            table_id=table.table_id,
+                            status="confirmed",
+                        )
+                    )
 
         # Dinner reservations (between 17:00 and 21:00)
         for hour in range(17, 22):
@@ -320,16 +552,24 @@ def seed_reservations(db: Session):
 
                 # Only add future reservations
                 if reservation_time > now:
-                    reservations.append(Reservation(
-                        date_time=reservation_time,
-                        party_size=random.randint(1, table.capacity),
-                        contact_name=f"Customer {len(reservations) + 1}",
-                        contact_phone=f"555-{random.randint(1000, 9999)}",
-                        special_requests=random.choice(
-                            ["No special requests", "Window seat preferred", "Highchair needed", ""]),
-                        table_id=table.table_id,
-                        status="confirmed"
-                    ))
+                    reservations.append(
+                        Reservation(
+                            date_time=reservation_time,
+                            party_size=random.randint(1, table.capacity),
+                            contact_name=f"Customer {len(reservations) + 1}",
+                            contact_phone=f"555-{random.randint(1000, 9999)}",
+                            special_requests=random.choice(
+                                [
+                                    "No special requests",
+                                    "Window seat preferred",
+                                    "Highchair needed",
+                                    "",
+                                ]
+                            ),
+                            table_id=table.table_id,
+                            status="confirmed",
+                        )
+                    )
 
     db.add_all(reservations)
     db.commit()
@@ -354,7 +594,9 @@ def seed_orders(db: Session):
         for _ in range(random.randint(5, 10)):
             employee = random.choice(employees)
             table = random.choice(tables)
-            order_time = order_date.replace(hour=random.randint(11, 14), minute=random.randint(0, 59))
+            order_time = order_date.replace(
+                hour=random.randint(11, 14), minute=random.randint(0, 59)
+            )
 
             order = Order(
                 order_time=order_time,
@@ -364,7 +606,7 @@ def seed_orders(db: Session):
                 status="paid",
                 subtotal=0.00,
                 tax=0.00,
-                total=0.00
+                total=0.00,
             )
             db.add(order)
             db.flush()  # To get the order_id
@@ -379,7 +621,7 @@ def seed_orders(db: Session):
                     menu_item_id=menu_item.menu_item_id,
                     quantity=quantity,
                     special_instructions=random.choice(["", "Extra hot", "No onions"]),
-                    price=menu_item.price
+                    price=menu_item.price,
                 )
                 db.add(order_item)
                 db.flush()  # To get the order_item_id
@@ -387,18 +629,26 @@ def seed_orders(db: Session):
                 # Maybe add a customization
                 if random.random() < 0.3:
                     # Get customizations for this menu item
-                    item_customizations = [c for c in customizations if c.menu_item_id == menu_item.menu_item_id]
+                    item_customizations = [
+                        c
+                        for c in customizations
+                        if c.menu_item_id == menu_item.menu_item_id
+                    ]
                     if item_customizations:
                         customization = random.choice(item_customizations)
-                        db.add(OrderItemCustomization(
-                            order_item_id=order_item.order_item_id,
-                            customization_id=customization.customization_id
-                        ))
+                        db.add(
+                            OrderItemCustomization(
+                                order_item_id=order_item.order_item_id,
+                                customization_id=customization.customization_id,
+                            )
+                        )
 
             # Calculate totals
-            order_items = db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+            order_items = (
+                db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+            )
             subtotal = sum(item.price * item.quantity for item in order_items)
-            tax = subtotal * Decimal('0.0825')  # 8.25% tax
+            tax = subtotal * Decimal("0.0825")  # 8.25% tax
             total = subtotal + tax
 
             order.subtotal = subtotal
@@ -412,7 +662,7 @@ def seed_orders(db: Session):
                 payment_method=random.choice(["cash", "credit", "debit"]),
                 amount=total,
                 tip_amount=subtotal * Decimal(random.uniform(0.15, 0.25)),  # 15-25% tip
-                status="completed"
+                status="completed",
             )
             db.add(payment)
 
@@ -422,7 +672,9 @@ def seed_orders(db: Session):
         for _ in range(random.randint(8, 15)):
             employee = random.choice(employees)
             table = random.choice(tables)
-            order_time = order_date.replace(hour=random.randint(17, 21), minute=random.randint(0, 59))
+            order_time = order_date.replace(
+                hour=random.randint(17, 21), minute=random.randint(0, 59)
+            )
 
             order = Order(
                 order_time=order_time,
@@ -432,7 +684,7 @@ def seed_orders(db: Session):
                 status="paid",
                 subtotal=0.00,
                 tax=0.00,
-                total=0.00
+                total=0.00,
             )
             db.add(order)
             db.flush()  # To get the order_id
@@ -447,7 +699,7 @@ def seed_orders(db: Session):
                     menu_item_id=menu_item.menu_item_id,
                     quantity=quantity,
                     special_instructions=random.choice(["", "Extra hot", "No onions"]),
-                    price=menu_item.price
+                    price=menu_item.price,
                 )
                 db.add(order_item)
                 db.flush()  # To get the order_item_id
@@ -455,18 +707,26 @@ def seed_orders(db: Session):
                 # Maybe add a customization
                 if random.random() < 0.3:
                     # Get customizations for this menu item
-                    item_customizations = [c for c in customizations if c.menu_item_id == menu_item.menu_item_id]
+                    item_customizations = [
+                        c
+                        for c in customizations
+                        if c.menu_item_id == menu_item.menu_item_id
+                    ]
                     if item_customizations:
                         customization = random.choice(item_customizations)
-                        db.add(OrderItemCustomization(
-                            order_item_id=order_item.order_item_id,
-                            customization_id=customization.customization_id
-                        ))
+                        db.add(
+                            OrderItemCustomization(
+                                order_item_id=order_item.order_item_id,
+                                customization_id=customization.customization_id,
+                            )
+                        )
 
             # Calculate totals
-            order_items = db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+            order_items = (
+                db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+            )
             subtotal = sum(item.price * item.quantity for item in order_items)
-            tax = subtotal * Decimal('0.0825')  # 8.25% tax
+            tax = subtotal * Decimal("0.0825")  # 8.25% tax
             total = subtotal + tax
 
             order.subtotal = subtotal
@@ -480,7 +740,7 @@ def seed_orders(db: Session):
                 payment_method=random.choice(["cash", "credit", "debit"]),
                 amount=total,
                 tip_amount=subtotal * Decimal(random.uniform(0.15, 0.25)),  # 15-25% tip
-                status="completed"
+                status="completed",
             )
             db.add(payment)
 
@@ -500,7 +760,7 @@ def seed_orders(db: Session):
             status=random.choice(["new", "preparing", "served"]),
             subtotal=0.00,
             tax=0.00,
-            total=0.00
+            total=0.00,
         )
         db.add(order)
         db.flush()  # To get the order_id
@@ -515,7 +775,7 @@ def seed_orders(db: Session):
                 menu_item_id=menu_item.menu_item_id,
                 quantity=quantity,
                 special_instructions=random.choice(["", "Extra hot", "No onions"]),
-                price=menu_item.price
+                price=menu_item.price,
             )
             db.add(order_item)
             db.flush()  # To get the order_item_id
@@ -523,18 +783,26 @@ def seed_orders(db: Session):
             # Maybe add a customization
             if random.random() < 0.3:
                 # Get customizations for this menu item
-                item_customizations = [c for c in customizations if c.menu_item_id == menu_item.menu_item_id]
+                item_customizations = [
+                    c
+                    for c in customizations
+                    if c.menu_item_id == menu_item.menu_item_id
+                ]
                 if item_customizations:
                     customization = random.choice(item_customizations)
-                    db.add(OrderItemCustomization(
-                        order_item_id=order_item.order_item_id,
-                        customization_id=customization.customization_id
-                    ))
+                    db.add(
+                        OrderItemCustomization(
+                            order_item_id=order_item.order_item_id,
+                            customization_id=customization.customization_id,
+                        )
+                    )
 
         # Calculate totals
-        order_items = db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+        order_items = (
+            db.query(OrderItem).filter(OrderItem.order_id == order.order_id).all()
+        )
         subtotal = sum(item.price * item.quantity for item in order_items)
-        tax = subtotal * Decimal('0.0825')  # 8.25% tax
+        tax = subtotal * Decimal("0.0825")  # 8.25% tax
         total = subtotal + tax
 
         order.subtotal = subtotal
