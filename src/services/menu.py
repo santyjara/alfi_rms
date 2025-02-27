@@ -1,10 +1,7 @@
 import logging
 
 # Import models
-from src.gateways.database.models import (
-    MenuItem,
-    MenuItemCustomization,
-)
+from src.gateways.database.models import MenuItem, MenuItemCustomization
 from src.services.base import BaseService
 
 # Configure logging

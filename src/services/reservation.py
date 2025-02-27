@@ -3,8 +3,8 @@ from datetime import datetime
 
 # Import models
 from src.gateways.database.models import Reservation
-from src.services.table import TableService
 from src.services.base import BaseService
+from src.services.table import TableService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

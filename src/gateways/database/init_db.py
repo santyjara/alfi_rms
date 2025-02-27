@@ -35,13 +35,9 @@ def seed_db():
     db = SessionLocal()
 
     try:
-        from src.gateways.database.models import (
-            Employee,
-            InventoryItem,
-            MenuItem,
-            RecipeRequirement,
-            Table,
-        )
+        from src.gateways.database.models import (Employee, InventoryItem,
+                                                  MenuItem, RecipeRequirement,
+                                                  Table)
 
         # Check if we already have tables
         if db.query(Table).count() == 0:

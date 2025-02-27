@@ -1,14 +1,12 @@
 import logging
 from datetime import datetime
 
-
 # Import models
-from src.gateways.database.models import (
-    Payment
-)
+from src.gateways.database.models import Payment
 from src.services.base import BaseService
 from src.services.order import OrderService
 from src.services.table import TableService
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

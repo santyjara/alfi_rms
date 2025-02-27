@@ -1,10 +1,7 @@
 import logging
 
 # Import models
-from src.gateways.database.models import (
-    Employee,
-    Shift
-)
+from src.gateways.database.models import Employee, Shift
 from src.services.base import BaseService
 
 # Configure logging
