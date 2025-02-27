@@ -34,7 +34,7 @@ def get_db() -> Generator:
 
 # Initialize database function
 def init_db():
-    from models import Base
+    from src.gateways.database.models import Base
 
     Base.metadata.create_all(bind=engine)
 

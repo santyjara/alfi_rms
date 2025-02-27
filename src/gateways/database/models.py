@@ -21,7 +21,7 @@ class Table(Base):
     __tablename__ = "tables"
 
     table_id = Column(Integer, primary_key=True)
-    table_number = Column(Integer, nullable=False)
+    table_number = Column(Integer, nullable=True)
     capacity = Column(Integer, nullable=False)
     section = Column(String(50), nullable=False)
     status = Column(String(20), default="available")  # available, reserved, occupied

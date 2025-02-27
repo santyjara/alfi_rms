@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import all routers
-from src.api.routers import menu, orders, payments, reservations, table
+from src.api.routers import table
 
 # Import database utilities
 from src.gateways.database.utils import startup_db_handler
@@ -27,11 +27,11 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(tables.router)
-app.include_router(reservations.router)
-app.include_router(menu.router)
-app.include_router(orders.router)
-app.include_router(payments.router)
+app.include_router(table.router)
+# app.include_router(reservations.router)
+# app.include_router(menu.router)
+# app.include_router(orders.router)
+# app.include_router(payments.router)
 
 
 # Startup event
