@@ -31,12 +31,27 @@ async def register_user(
 ):
     """
     Register a new employee (requires staff or admin permission)
+    
+    Required attributes:
+    - address
+    - birthdate (format: YYYY-MM-DD)
+    - gender
+    - phone_number (format: +12345678900)
+    - email (contact_info)
+    - given_name (optional, derived from name if not provided)
+    - family_name (optional, derived from name if not provided)
     """
-    # Create user in Cognito
+    # Create user in Cognito with all required attributes
     create_cognito_user(
         email=employee.contact_info,
         name=employee.name,
         role=employee.role,
+        address=employee.address,
+        birthdate=employee.birthdate,
+        gender=employee.gender,
+        phone_number=employee.phone_number,
+        given_name=employee.given_name,
+        family_name=employee.family_name,
     )
     
     # Return success response

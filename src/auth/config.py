@@ -6,14 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class CognitoConfig(BaseSettings):
-    region: str = "us-east-1"
-    user_pool_id: str
-    client_id: str
-    client_secret: str
-    domain: str
+    COGNITO_REGION: str = "us-east-1"
+    COGNITO_USER_POOL_ID: str
+    COGNITO_CLIENT_ID: str
+    COGNITO_CLIENT_SECRET: str
+    COGNITO_DOMAIN: str
 
     model_config = SettingsConfigDict(
-        env_prefix="COGNITO_",
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",

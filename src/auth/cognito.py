@@ -14,11 +14,14 @@ cognito_config = get_cognito_config()
 
 # Configure Cognito settings
 cognito_settings = CognitoSettings(
-    region=cognito_config.region,
-    user_pool_id=cognito_config.user_pool_id,
-    client_id=cognito_config.client_id,
-    client_secret=cognito_config.client_secret,
-    domain=cognito_config.domain,
+    check_expiration=True,
+    jwt_header_prefix="Bearer",
+    jwt_header_name="Authorization",
+    userpools={"main": {
+        "region": cognito_config.COGNITO_REGION,
+        "userpool_id": cognito_config.COGNITO_USER_POOL_ID,
+        "app_client_id": cognito_config.COGNITO_CLIENT_ID,
+    }}
 )
 
 # Initialize CognitoAuth
@@ -26,8 +29,8 @@ cognito_auth = CognitoAuth(settings=cognito_settings)
 
 # OAuth2 scheme for token validation
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl=f"https://{cognito_config.domain}/oauth2/authorize",
-    tokenUrl=f"https://{cognito_config.domain}/oauth2/token",
+    authorizationUrl=f"https://{cognito_config.COGNITO_DOMAIN}/docs",
+    tokenUrl=f"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_uPbG8SwWi/.well-known/jwks.json",
     scopes={"email": "email access", "profile": "profile access"},
 )
 
@@ -96,23 +99,68 @@ async def staff_required(current_user: dict = Depends(get_current_user)):
 
 
 # Direct Cognito client for additional operations
-cognito_client = boto3.client("cognito-idp", region_name=cognito_config.region)
+cognito_client = boto3.client("cognito-idp", region_name=cognito_config.COGNITO_REGION)
 
 
-def create_cognito_user(email: str, name: str, role: str = "staff"):
+def create_cognito_user(
+    email: str,
+    name: str,
+    role: str = "staff",
+    address: str = None,
+    birthdate: str = None,
+    gender: str = None,
+    phone_number: str = None,
+    given_name: str = None,
+    family_name: str = None,
+):
     """
-    Create a new user in Cognito User Pool
+    Create a new user in Cognito User Pool with required attributes
+    
+    Required attributes:
+    - address
+    - birthdate (format: YYYY-MM-DD)
+    - gender
+    - phone_number (format: +12345678900)
+    - email
+    - given_name
+    - family_name
     """
     try:
+        # Split name into given_name and family_name if not provided
+        if not given_name or not family_name:
+            name_parts = name.split(maxsplit=1)
+            given_name = given_name or name_parts[0]
+            family_name = family_name or (name_parts[1] if len(name_parts) > 1 else "")
+        
+        # Current timestamp for updated_at
+        from datetime import datetime
+        current_time = datetime.utcnow().isoformat()
+        
+        # Prepare user attributes
+        user_attributes = [
+            {"Name": "email", "Value": email},
+            {"Name": "email_verified", "Value": "true"},
+            {"Name": "given_name", "Value": given_name},
+            {"Name": "family_name", "Value": family_name},
+            {"Name": "name", "Value": name},
+            {"Name": "updated_at", "Value": current_time},
+            {"Name": "custom:role", "Value": role},
+        ]
+        
+        # Add required attributes if provided
+        if address:
+            user_attributes.append({"Name": "address", "Value": address})
+        if birthdate:
+            user_attributes.append({"Name": "birthdate", "Value": birthdate})
+        if gender:
+            user_attributes.append({"Name": "gender", "Value": gender})
+        if phone_number:
+            user_attributes.append({"Name": "phone_number", "Value": phone_number})
+            
         response = cognito_client.admin_create_user(
             UserPoolId=cognito_config.user_pool_id,
             Username=email,
-            UserAttributes=[
-                {"Name": "email", "Value": email},
-                {"Name": "email_verified", "Value": "true"},
-                {"Name": "name", "Value": name},
-                {"Name": "custom:role", "Value": role},
-            ],
+            UserAttributes=user_attributes,
             MessageAction="SUPPRESS",  # Don't send welcome email
             TemporaryPassword=f"Temp123!",  # Temporary password
         )
