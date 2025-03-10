@@ -31,7 +31,7 @@ async def register_user(
 ):
     """
     Register a new employee (requires staff or admin permission)
-    
+
     Required attributes:
     - address
     - birthdate (format: YYYY-MM-DD)
@@ -53,7 +53,7 @@ async def register_user(
         given_name=employee.given_name,
         family_name=employee.family_name,
     )
-    
+
     # Return success response
     return {
         "status": "success",

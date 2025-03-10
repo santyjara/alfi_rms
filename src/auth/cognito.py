@@ -17,11 +17,13 @@ cognito_settings = CognitoSettings(
     check_expiration=True,
     jwt_header_prefix="Bearer",
     jwt_header_name="Authorization",
-    userpools={"main": {
-        "region": cognito_config.COGNITO_REGION,
-        "userpool_id": cognito_config.COGNITO_USER_POOL_ID,
-        "app_client_id": cognito_config.COGNITO_CLIENT_ID,
-    }}
+    userpools={
+        "main": {
+            "region": cognito_config.COGNITO_REGION,
+            "userpool_id": cognito_config.COGNITO_USER_POOL_ID,
+            "app_client_id": cognito_config.COGNITO_CLIENT_ID,
+        }
+    },
 )
 
 # Initialize CognitoAuth
@@ -37,12 +39,13 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
 
 class TokenPayload(BaseModel):
     """Token payload model"""
+
     sub: str
     exp: int
     username: Optional[str] = None
     email: Optional[str] = None
     groups: List[str] = []
-    
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     """
@@ -53,19 +56,19 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         # Verify and decode the token
         payload = await cognito_auth.verify_token(token)
-        
+
         # Extract user information
         username = payload.get("username") or payload.get("email")
         if not username:
             raise credentials_exception
-            
+
         # Extract user's groups/roles from the token
         groups = payload.get("cognito:groups", [])
-        
+
         return {"username": username, "groups": groups, "sub": payload.get("sub")}
     except JWTError:
         raise credentials_exception
@@ -89,7 +92,7 @@ async def staff_required(current_user: dict = Depends(get_current_user)):
     """
     allowed_groups = ["admin", "staff", "manager"]
     user_groups = current_user.get("groups", [])
-    
+
     if not any(group in allowed_groups for group in user_groups):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -99,7 +102,12 @@ async def staff_required(current_user: dict = Depends(get_current_user)):
 
 
 # Direct Cognito client for additional operations
-cognito_client = boto3.client("cognito-idp", region_name=cognito_config.COGNITO_REGION)
+cognito_client = boto3.client(
+    "cognito-idp",
+    region_name=cognito_config.COGNITO_REGION,
+    aws_access_key_id=cognito_config.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=cognito_config.AWS_SECRET_ACCESS_KEY,
+)
 
 
 def create_cognito_user(
@@ -115,7 +123,7 @@ def create_cognito_user(
 ):
     """
     Create a new user in Cognito User Pool with required attributes
-    
+
     Required attributes:
     - address
     - birthdate (format: YYYY-MM-DD)
@@ -131,11 +139,12 @@ def create_cognito_user(
             name_parts = name.split(maxsplit=1)
             given_name = given_name or name_parts[0]
             family_name = family_name or (name_parts[1] if len(name_parts) > 1 else "")
-        
+
         # Current timestamp for updated_at
         from datetime import datetime
-        current_time = datetime.utcnow().isoformat()
-        
+
+        current_time = str(int(datetime.now().timestamp()))
+
         # Prepare user attributes
         user_attributes = [
             {"Name": "email", "Value": email},
@@ -144,9 +153,8 @@ def create_cognito_user(
             {"Name": "family_name", "Value": family_name},
             {"Name": "name", "Value": name},
             {"Name": "updated_at", "Value": current_time},
-            {"Name": "custom:role", "Value": role},
         ]
-        
+
         # Add required attributes if provided
         if address:
             user_attributes.append({"Name": "address", "Value": address})
@@ -156,23 +164,23 @@ def create_cognito_user(
             user_attributes.append({"Name": "gender", "Value": gender})
         if phone_number:
             user_attributes.append({"Name": "phone_number", "Value": phone_number})
-            
+
         response = cognito_client.admin_create_user(
-            UserPoolId=cognito_config.user_pool_id,
+            UserPoolId=cognito_config.COGNITO_USER_POOL_ID,
             Username=email,
             UserAttributes=user_attributes,
             MessageAction="SUPPRESS",  # Don't send welcome email
-            TemporaryPassword=f"Temp123!",  # Temporary password
+            TemporaryPassword=f"Temp12333332***!",  # Temporary password
         )
-        
+
         # Add user to appropriate group based on role
-        if role in ["admin", "staff", "manager"]:
+        if role in ["Admin", "Staff", "Manager"]:
             cognito_client.admin_add_user_to_group(
-                UserPoolId=cognito_config.user_pool_id,
+                UserPoolId=cognito_config.COGNITO_USER_POOL_ID,
                 Username=email,
                 GroupName=role,
             )
-            
+
         return response
     except Exception as e:
         # Handle specific Cognito exceptions
@@ -188,7 +196,7 @@ def delete_cognito_user(username: str):
     """
     try:
         response = cognito_client.admin_delete_user(
-            UserPoolId=cognito_config.user_pool_id,
+            UserPoolId=cognito_config.COGNITO_USER_POOL_ID,
             Username=username,
         )
         return response
