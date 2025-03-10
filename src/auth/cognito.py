@@ -1,10 +1,10 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import boto3
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
 from fastapi_cognito import CognitoAuth, CognitoSettings
-from jose import JWTError, jwk, jwt
+from jose import JWTError
 from pydantic import BaseModel
 
 from src.auth.config import get_cognito_config
@@ -32,9 +32,9 @@ cognito_auth = CognitoAuth(settings=cognito_settings)
 # OAuth2 scheme for token validation
 oauth2_scheme = OAuth2AuthorizationCodeBearer(
     authorizationUrl=f"https://{cognito_config.COGNITO_DOMAIN}/docs",
-    tokenUrl=f"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_uPbG8SwWi/.well-known/jwks.json",
+    tokenUrl=f"https://cognito-idp.{cognito_config.COGNITO_REGION}.amazonaws.com/{cognito_config.COGNITO_USER_POOL_ID}/.well-known/jwks.json",
     scopes={"email": "email access", "profile": "profile access"},
-)
+) # noqa
 
 
 class TokenPayload(BaseModel):
@@ -170,7 +170,7 @@ def create_cognito_user(
             Username=email,
             UserAttributes=user_attributes,
             MessageAction="SUPPRESS",  # Don't send welcome email
-            TemporaryPassword=f"Temp12333332***!",  # Temporary password
+            TemporaryPassword="Temp12333332***!",  # Temporary password
         )
 
         # Add user to appropriate group based on role

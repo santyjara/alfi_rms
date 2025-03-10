@@ -74,7 +74,7 @@ def test_real_create_and_delete_cognito_user(test_user_email, cognito_config):
     assert any(group["GroupName"] == test_role for group in groups["Groups"])
 
     # 4. Delete the user
-    delete_result = delete_cognito_user(test_user_email)
+    delete_cognito_user(test_user_email)
 
     # 5. Verify user no longer exists
     with pytest.raises(ClientError) as excinfo:

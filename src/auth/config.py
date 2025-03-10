@@ -1,7 +1,7 @@
-import os
+
 from functools import lru_cache
 
-from pydantic import BaseModel
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +11,8 @@ class CognitoConfig(BaseSettings):
     COGNITO_CLIENT_ID: str
     COGNITO_CLIENT_SECRET: str
     COGNITO_DOMAIN: str
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

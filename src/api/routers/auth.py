@@ -1,10 +1,9 @@
-from typing import Dict, Optional
+from typing import Dict
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from src.auth.cognito import create_cognito_user, get_current_user, staff_required
-from src.schemas.employee import EmployeeCreate, EmployeeResponse
-from src.services.employee import EmployeeService
+from src.schemas.employee import EmployeeCreate
 
 router = APIRouter(
     prefix="/auth",

@@ -16,9 +16,15 @@ class EmployeeCreate(EmployeeBase):
     address: str = Field(..., description="Employee address")
     birthdate: str = Field(..., description="Employee birthdate (YYYY-MM-DD)")
     gender: str = Field(..., description="Employee gender")
-    phone_number: str = Field(..., description="Employee phone number (format: +12345678900)")
-    given_name: Optional[str] = Field(None, description="Employee given name (first name)")
-    family_name: Optional[str] = Field(None, description="Employee family name (last name)")
+    phone_number: str = Field(
+        ..., description="Employee phone number (format: +12345678900)"
+    )
+    given_name: Optional[str] = Field(
+        None, description="Employee given name (first name)"
+    )
+    family_name: Optional[str] = Field(
+        None, description="Employee family name (last name)"
+    )
 
 
 class EmployeeUpdate(BaseModel):

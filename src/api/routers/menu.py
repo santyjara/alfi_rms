@@ -3,8 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from src.auth.cognito import get_current_user, staff_required
-
+from src.auth.cognito import staff_required
 from src.gateways.database.utils import get_db
 from src.schemas.menu import (
     MenuItemCreate,
@@ -47,7 +46,7 @@ def get_menu_item(menu_item_id: int, service: MenuService = Depends(get_menu_ser
 
 @router.post("/items", response_model=MenuItemResponse, status_code=201)
 def create_menu_item(
-    menu_item: MenuItemCreate, 
+    menu_item: MenuItemCreate,
     current_user: dict = Depends(staff_required),  # Only staff can create items
     service: MenuService = Depends(get_menu_service),
 ):

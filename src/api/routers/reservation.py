@@ -1,10 +1,10 @@
 from datetime import date
 from typing import List
 
-from src.gateways.database.utils import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.gateways.database.utils import get_db
 from src.schemas.reservation import (
     ReservationCreate,
     ReservationResponse,
